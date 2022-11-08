@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import GleoMap from '@/components/GleoMap.vue'
+import GleoMap from "@/components/GleoMap.vue";
 </script>
 
 <template>
