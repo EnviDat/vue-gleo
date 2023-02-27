@@ -17,7 +17,7 @@ import "gleo/src/actuators/WheelActuator.mjs";
 import "gleo/src/actuators/InertiaActuator.mjs";
 import proj4 from "gleo/src/3rd-party/proj4js/proj4-src.js";
 import { enableProj } from "gleo/src/crs/projector.mjs";
-import { Feature as GeoJSONFeature } from "@types/geojson";
+import type { Feature as GeoJSONFeature } from "types/geojson";
 
 const mapParentDiv = $ref<HTMLElement>();
 let map = $ref<GleoMap>(null);
@@ -99,13 +99,14 @@ onMounted(() => {
   fetch("./ne_110m_coastline.geojson")
     .then((response) => response.json())
     .then((json) => {
-      const coastHairs = json.features.map(
-        (feat: GeoJSONFeature) =>
-          new Hair(new Geometry(epsg4326, feat.geometry.coordinates), {
+      const coastHairs = json.features.map((feat: GeoJSONFeature) => {
+        if (feat.geometry.type === "Point") {
+          return new Hair(new Geometry(epsg4326, feat.geometry.coordinates), {
             colour: "blue",
             attribution: "Natural Earth coastlines",
-          })
-      );
+          });
+        }
+      });
 
       map.multiAdd(coastHairs);
       // map.redraw();
@@ -140,9 +141,9 @@ onMounted(() => {
   fetch("./gendib_27_02_2023.geojson")
     .then((response) => response.json())
     .then((json) => {
-      fillArray = json.features.map(
-        (feat: GeoJSONFeature) =>
-          new Fill(
+      fillArray = json.features.map((feat: GeoJSONFeature) => {
+        if (feat.geometry.type === "Point") {
+          return new Fill(
             new Geometry(epsg4326, [
               [feat.geometry.coordinates[0], feat.geometry.coordinates[1]],
               [
@@ -165,8 +166,9 @@ onMounted(() => {
               attribution:
                 "<a href='https://www.geoboundaries.org'>geoboundaries</a>",
             }
-          )
-      );
+          );
+        }
+      });
 
       map.multiAdd(fillArray);
       // map.redraw();
