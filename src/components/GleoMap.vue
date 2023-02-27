@@ -1,23 +1,29 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 
-import GleoMap from "@gleo/Map.mjs";
-import Fill from "@gleo/symbols/Fill.mjs";
-import Hair from "@gleo/symbols/Hair.mjs";
-import Sprite from "@gleo/symbols/Sprite.mjs";
-import Geometry from "@gleo/coord/Geometry.mjs";
-import LngLat from "@gleo/coord/LngLat.mjs";
-import epsg4326 from "@gleo/crs/epsg4326.mjs";
-import epsg3857 from "@gleo/crs/epsg3857.mjs";
-import BaseCRS from "@gleo/crs/BaseCRS.mjs";
-import "@gleo/actuators/DragActuator.mjs";
-import "@gleo/actuators/WheelActuator.mjs";
-import "@gleo/actuators/InertiaActuator.mjs";
-import proj4 from "@gleo/3rd-party/proj4js/proj4-src.js";
-import { enableProj } from "@gleo/crs/projector.mjs";
+import GleoMap from "gleo/src/Map.mjs";
+// import AcetateTintedSprite from "gleo/src/acetates/AcetateTintedSprite.mjs"
+import Fill from "gleo/src/symbols/Fill.mjs";
+import Hair from "gleo/src/symbols/Hair.mjs";
+import Sprite from "gleo/src/symbols/Sprite.mjs";
+// import TintedSprite from "gleo/src/symbols/TintedSprite.mjs";
+import Geometry from "gleo/src/geometry/Geometry.mjs";
+import LngLat from "gleo/src/geometry/LngLat.mjs";
+import epsg4326 from "gleo/src/crs/epsg4326.mjs";
+import epsg3857 from "gleo/src/crs/epsg3857.mjs";
+import BaseCRS from "gleo/src/crs/BaseCRS.mjs";
+import "gleo/src/actuators/DragActuator.mjs";
+import "gleo/src/actuators/WheelActuator.mjs";
+import "gleo/src/actuators/InertiaActuator.mjs";
+import proj4 from "gleo/src/3rd-party/proj4js/proj4-src.js";
+import { enableProj } from "gleo/src/crs/projector.mjs";
+import { Feature as GeoJSONFeature } from "@types/geojson";
 
 const mapParentDiv = $ref<HTMLElement>();
 let map = $ref<GleoMap>(null);
+// let spriteLayer = $ref<AcetateTintedSprite>(null);
+// let polygonFill = $ref<Fill>(null);
+let fillArray = $ref<Array<Fill>>([]);
 
 enableProj(proj4);
 proj4.defs(
@@ -72,6 +78,13 @@ defineProps({
 function reproject(crs: BaseCRS, lnglat: Array<Number>, scale: number) {
   map.setView({ crs: crs, center: new LngLat(lnglat), scale: scale });
 }
+function updateFillColour(colour: string) {
+  // polygonFill.colour = colour;
+  fillArray.forEach((x) => {
+    console.log();
+    x.colour = colour;
+  });
+}
 
 onMounted(() => {
   map = new GleoMap(mapParentDiv);
@@ -87,7 +100,7 @@ onMounted(() => {
     .then((response) => response.json())
     .then((json) => {
       const coastHairs = json.features.map(
-        (feat) =>
+        (feat: GeoJSONFeature) =>
           new Hair(new Geometry(epsg4326, feat.geometry.coordinates), {
             colour: "blue",
             attribution: "Natural Earth coastlines",
@@ -95,58 +108,105 @@ onMounted(() => {
       );
 
       map.multiAdd(coastHairs);
-
-      map.redraw();
+      // map.redraw();
     });
 
-  const colourRamp = [
-    "#7fc97f",
-    "#beaed4",
-    "#fdc086",
-    "#ffff99",
-    "#386cb0",
-    "#f0027f",
-    "#bf5b17",
-  ];
+  // const colourRamp = [
+  //   "#7fc97f",
+  //   "#beaed4",
+  //   "#fdc086",
+  //   "#ffff99",
+  //   "#386cb0",
+  //   "#f0027f",
+  //   "#bf5b17",
+  // ];
 
-  fetch("./geoBoundariesCGAZ_ADM0.simplify100usr.geojson")
+  // fetch("./geoBoundariesCGAZ_ADM0.simplify100usr.geojson")
+  //   .then((response) => response.json())
+  //   .then((json) => {
+  //     const countryFills = json.features.map(
+  //       (feat: GeoJSONFeature) =>
+  //         new Fill(new Geometry(epsg4326, feat.geometry.coordinates), {
+  //           colour: colourRamp[feat?.properties?.color_id - 1],
+  //           attribution:
+  //             "<a href='https://www.geoboundaries.org'>geoboundaries</a>",
+  //         })
+  //     );
+
+  //     map.multiAdd(countryFills);
+  //     // map.redraw();
+  //   });
+
+  fetch("./gendib_27_02_2023.geojson")
     .then((response) => response.json())
     .then((json) => {
-      const countryFills = json.features.map(
-        (feat) =>
-          new Fill(new Geometry(epsg4326, feat.geometry.coordinates), {
-            colour: colourRamp[feat.properties.color_id - 1],
-            attribution:
-              "<a href='https://www.geoboundaries.org'>geoboundaries</a>",
-          })
+      fillArray = json.features.map(
+        (feat: GeoJSONFeature) =>
+          new Fill(
+            new Geometry(epsg4326, [
+              [feat.geometry.coordinates[0], feat.geometry.coordinates[1]],
+              [
+                feat.geometry.coordinates[0] + 0.05,
+                feat.geometry.coordinates[1],
+              ],
+              [
+                feat.geometry.coordinates[0] + 0.05,
+                feat.geometry.coordinates[1] + 0.05,
+              ],
+              [
+                feat.geometry.coordinates[0],
+                feat.geometry.coordinates[1] + 0.05,
+              ],
+              [feat.geometry.coordinates[0], feat.geometry.coordinates[1]],
+            ]),
+            {
+              colour: "red",
+              radius: 6,
+              attribution:
+                "<a href='https://www.geoboundaries.org'>geoboundaries</a>",
+            }
+          )
       );
 
-      map.multiAdd(countryFills);
-      map.redraw();
+      map.multiAdd(fillArray);
+      // map.redraw();
     });
 
-  const spriteopts = {
-    image: "./leaflet-marker-icon.png",
-    imageSize: [25, 41],
-    spriteAnchor: [12, 41],
-  };
+  // const spriteopts = {
+  //   interactive: true,
+  //   image: "./leaflet-marker-icon.png",
+  //   imageSize: [25, 41],
+  //   spriteAnchor: [12, 41],
+  // };
+  // const spriteMAD = new Sprite(
+  //   new LngLat([-3.6852975, 40.40197212]),
+  //   spriteopts
+  // );
+  // const spriteTRD = new Sprite(
+  //   new LngLat([10.4166662, 63.41665753]),
+  //   spriteopts
+  // );
+  // map.multiAdd([spriteMAD, spriteTRD]);
 
-  let spriteMAD = new Sprite(new LngLat([-3.6852975, 40.40197212]), spriteopts);
-  let spriteTRD = new Sprite(new LngLat([10.4166662, 63.41665753]), spriteopts);
-  let spriteBAS = new Sprite(
-    new LngLat([-58.399477, -34.60055574]),
-    spriteopts
-  );
+  // spriteLayer = map.platina.getAcetateOfClass(TintedSprite.Acetate);
 
-  map.multiAdd([spriteMAD, spriteTRD, spriteBAS]);
-  map.redraw();
+  // let sprite =  new TintedSprite(new LngLat([-58.399477, -34.60055574]), {
+  //     image: "./leaflet-marker-icon.png",
+  //     imageSize: [25, 41],
+  //     spriteAnchor: [12, 41],
+  //     tint: spriteTint,
+  //   });
+  // spriteLayer.add(sprite);
 
-  const sprites = [];
-  for (let x = 0; x < 359; x += 15) {
-    for (let y = 70; y < 89; y += 5) {
-      sprites.push(new Sprite(new LngLat([x, y]), spriteopts));
-    }
-  }
+  // map.redraw()
+
+  // const sprites = [];
+  // for (let x = 0; x < 359; x += 15) {
+  //   for (let y = 70; y < 89; y += 5) {
+  //     sprites.push(new Sprite(new LngLat([x, y]), spriteopts));
+  //   }
+  // }
+  // map.add(sprites);
 });
 </script>
 
@@ -176,5 +236,8 @@ onMounted(() => {
     <button @click="reproject(epsg25840, [90, 40], 20000)" id="25840">
       25840
     </button>
+    <button @click="updateFillColour('blue')" id="blue">Blue</button>
+    <button @click="updateFillColour('green')" id="green">Green</button>
+    <button @click="updateFillColour('red')" id="green">Red</button>
   </div>
 </template>
