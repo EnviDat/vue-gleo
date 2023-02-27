@@ -1,21 +1,25 @@
 lockfileVersion: 5.4
 
 specifiers:
+  "@types/geojson": ^7946.0.10
   "@types/node": ^18.11.9
   "@vitejs/plugin-vue": ^3.2.0
-  arrugator: ^1.1.0
-  glii: ^0.1.0
+  arrugator: ^1.2.1
+  gleo: ^0.1.0
+  glii: ^0.4.5
   typescript: ^4.6.4
   vite: ^3.2.3
   vue: ^3.2.41
   vue-tsc: ^1.0.9
 
 dependencies:
-  arrugator: 1.1.0
-  glii: 0.1.0
+  arrugator: 1.2.1
+  gleo: 0.1.0
+  glii: 0.4.5
   vue: 3.2.41
 
 devDependencies:
+  "@types/geojson": 7946.0.10
   "@types/node": 18.11.9
   "@vitejs/plugin-vue": 3.2.0_vite@3.2.3+vue@3.2.41
   typescript: 4.8.4
@@ -81,6 +85,13 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
+
+  /@types/geojson/7946.0.10:
+    resolution:
+      {
+        integrity: sha512-Nmh0K3iWQJzniTuPRcJn5hxXkfB1T1pgB89SBig5PlJQU5yocazeu4jATJlaA0GYFKWMqDdvYemoSnF2pXgLVA==,
+      }
+    dev: true
 
   /@types/node/18.11.9:
     resolution:
@@ -261,10 +272,10 @@ packages:
         integrity: sha512-W9mfWLHmJhkfAmV+7gDjcHeAWALQtgGT3JErxULl0oz6R6+3ug91I7IErs93eCFhPCZPHBs4QJS7YWEV7A3sxw==,
       }
 
-  /arrugator/1.1.0:
+  /arrugator/1.2.1:
     resolution:
       {
-        integrity: sha512-R2bnoVfb7ZlRRFPmgprgX/5M/6H0o8350cODhKn0gPjIOAZ9cSJu+ErHPJwpzel1QyVV2pQysKeDuck9BycGcw==,
+        integrity: sha512-3H2x98iDcXc6R2tbCIWdBeq5Ejuz84OlSUAUjeOQDi5/1kg8FxrUPncrGNfxWqVsWgvIuWIQ1Esj9kDmY9/84Q==,
       }
     dependencies:
       tinyqueue: 2.0.3
@@ -596,10 +607,17 @@ packages:
       }
     dev: true
 
-  /glii/0.1.0:
+  /gleo/0.1.0:
     resolution:
       {
-        integrity: sha512-MY91xZYvrlRtq29WIE4yvLiaTopvOrbPWcFl4Erb6zYsVpM4kRN6e00FQVmHsIfta60KmkhpuH+mC2WW1mOsYg==,
+        integrity: sha512-s8nVi5LXA4yKtsQ8nW+xkkuzq6paiPRQ2lGP3F2RZWWpIvv8i8bdhdN5U+0aJHZsOdKb9Af1FU0qFaS+nC5qLA==,
+      }
+    dev: false
+
+  /glii/0.4.5:
+    resolution:
+      {
+        integrity: sha512-lZosYwT/8fA7tJtOr8pE17Sltbf/BupL9Gk7QaY13de58+ltZso8XSQkBOEog4/tHwlg4VNGRjad8u8jcx7nSQ==,
       }
     dev: false
 
