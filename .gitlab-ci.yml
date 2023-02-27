@@ -34,7 +34,9 @@ vite-build:
 
 rclone-sync:
   stage: deploy
-  image: docker.io/rclone/rclone
+  image:
+    name: docker.io/rclone/rclone
+    entrypoint: [""]
   cache:
     key: dist
     paths:
