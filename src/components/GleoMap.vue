@@ -90,17 +90,16 @@ onMounted(() => {
   map = new GleoMap(mapParentDiv);
 
   map.setView({
-    crs: epsg25830,
-    center: new LngLat([0, 40]),
-    // scale: 0.4
-    scale: 20000,
+    crs: epsg4326,
+    center: new LngLat([8.22, 46.8]),
+    scale: 0.05,
   });
 
   fetch("./ne_110m_coastline.geojson")
     .then((response) => response.json())
     .then((json) => {
       const coastHairs = json.features.map((feat: GeoJSONFeature) => {
-        if (feat.geometry.type === "Point") {
+        if (feat.geometry.type === "LineString") {
           return new Hair(new Geometry(epsg4326, feat.geometry.coordinates), {
             colour: "blue",
             attribution: "Natural Earth coastlines",
@@ -109,7 +108,7 @@ onMounted(() => {
       });
 
       map.multiAdd(coastHairs);
-      // map.redraw();
+      map.redraw();
     });
 
   // const colourRamp = [
@@ -171,7 +170,7 @@ onMounted(() => {
       });
 
       map.multiAdd(fillArray);
-      // map.redraw();
+      map.redraw();
     });
 
   // const spriteopts = {
@@ -238,6 +237,8 @@ onMounted(() => {
     <button @click="reproject(epsg25840, [90, 40], 20000)" id="25840">
       25840
     </button>
+    <br />
+    <br />
     <button @click="updateFillColour('blue')" id="blue">Blue</button>
     <button @click="updateFillColour('green')" id="green">Green</button>
     <button @click="updateFillColour('red')" id="green">Red</button>
